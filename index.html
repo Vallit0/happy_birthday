@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Happy Birthday</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <style>
+      /* Contenedor de fireworks */
+      canvas {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1; /* Coloca el canvas detrás del contenido */
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="fireworksCanvas"></canvas>
+
+    <div class="birthdayCard">
+      <div class="cardFront">
+        <h3 class="happy">Feliz Cumpleaños Yeinny</h3>
+        <div class="balloons">
+          <div class="balloon-1"></div>
+          <div class="balloon-2"></div>
+          <div class="balloon-3"></div>
+          <div class="balloon-4"></div>
+        </div>
+        <button id="playAudio">🎶 Play 🎶</button>
+      </div>
+      <div class="cardInside">
+        <h3 class="back">Feliz Cumpleaños Yeinny</h3>
+        <p>Querida Propiedad de Steven</p>
+        <p class="small-text">
+          Sé que no nos conocemos desde hace mucho, 
+          pero me alegra mucho que estés en mi vida.
+          Ya sea que nos juntemos en las banquitas del S2 o en Discord, 
+          siempre me río cuando hablamos. 
+          Eres una persona muy especial y me alegra mucho que seas mi amiga.
+          Atentamente, Estuardo
+        </p>
+      </div>
+    </div>
+
+    <audio id="birthdayAudio">
+      <source src="audio/polaroid.mp3" type="audio/mp3" />
+      Tu navegador no soporta el audio.
+    </audio>
+
+    <script>
+      const canvas = document.getElementById("fireworksCanvas");
+      const ctx = canvas.getContext("2d");
+
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      class Firework {
+        constructor(x, y, colors) {
+          this.x = x;
+          this.y = y;
+          this.radius = Math.random() * 2 + 1;
+          this.color = colors[Math.floor(Math.random() * colors.length)];
+          this.alpha = 1;
+          this.decay = Math.random() * 0.03 + 0.01;
+          this.vx = Math.random() * 4 - 2;
+          this.vy = Math.random() * 4 - 2;
+        }
+
+        update() {
+          this.x += this.vx;
+          this.y += this.vy;
+          this.alpha -= this.decay;
+        }
+
+        draw() {
+          ctx.globalAlpha = this.alpha;
+          ctx.beginPath();
+          ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
+          ctx.fillStyle = this.color;
+          ctx.fill();
+          ctx.globalAlpha = 1;
+        }
+      }
+
+      let fireworks = [];
+      const colors = ["#FF6EC7", "#FFD700", "#FF4500", "#00BFFF", "#7FFF00"];
+
+      function createFirework() {
+        const x = Math.random() * canvas.width;
+        const y = Math.random() * canvas.height;
+        for (let i = 0; i < 50; i++) {
+          fireworks.push(new Firework(x, y, colors));
+        }
+      }
+
+      function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        fireworks.forEach((firework, index) => {
+          firework.update();
+          firework.draw();
+          if (firework.alpha <= 0) {
+            fireworks.splice(index, 1);
+          }
+        });
+
+        requestAnimationFrame(animate);
+      }
+
+      document.getElementById("playAudio").addEventListener("click", () => {
+        const audio = document.getElementById("birthdayAudio");
+        audio.play();
+
+        // Generar fuegos artificiales al hacer clic
+        setInterval(createFirework, 500); // Cada 500ms
+        animate();
+      });
+
+      // Ajustar el tamaño del canvas al cambiar el tamaño de la ventana
+      window.addEventListener("resize", () => {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+      });
+    </script>
+  </body>
+</html>
